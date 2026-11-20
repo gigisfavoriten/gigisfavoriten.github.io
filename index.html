@@ -71,6 +71,15 @@
   .back{font:800 11px Inter;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer}
 
   /* Sticky Filterleiste */
+  #count{display:none}
+  .anker{height:0;margin-top:26px;scroll-margin-top:12px}
+  .cat.alle{grid-column:1 / -1;flex-direction:row;gap:10px;min-height:54px;padding:12px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:800}
+  .cat.alle svg{width:22px;height:22px}
+  .cat.alle small{font:800 11px Inter;letter-spacing:.12em;color:var(--red)}
+  .cat.alle[aria-pressed="true"] small{color:#fff}
+  .hoch{position:fixed;right:16px;bottom:20px;z-index:30;width:48px;height:48px;border:0;border-radius:50%;background:var(--red);color:#fff;font:800 20px Inter;
+    box-shadow:0 8px 18px -6px rgba(60,20,20,.5);cursor:pointer;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s,transform .25s}
+  .hoch.zeigen{opacity:1;transform:none;pointer-events:auto}
   .bar{position:sticky;top:0;z-index:20;margin:28px -16px 0;padding:10px 16px;background:rgba(239,230,220,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
@@ -130,7 +139,8 @@
   <div class="head"><span class="caps">Was suchst du?</span><span class="caps red" id="count"></span></div>
   <div class="cats" id="cats"></div>
 
-  <div class="bar" id="bar"><div class="chips" id="chips" role="group" aria-label="Kategorien"></div></div>
+  <div class="anker" id="bar"></div>
+  <button class="hoch" id="hoch" aria-label="Zu den Kategorien">↑</button>
   <main class="grid" id="list"></main>
 
   <footer>
@@ -359,6 +369,7 @@ const KI = {
   tropfen: '<path d="M12 3.5c3 4 5.5 7 5.5 10.2A5.5 5.5 0 0112 19.2a5.5 5.5 0 01-5.5-5.5C6.5 10.5 9 7.5 12 3.5z"/><path d="M9.5 14a2.6 2.6 0 002.5 2.5"/>',
   haar: '<path d="M6 3h3v18H6z"/><path d="M9 6h8M9 9h9M9 12h8M9 15h9M9 18h8"/>',
   buerste: '<rect x="4" y="9" width="12" height="7" rx="3.5"/><path d="M6 16v2M9 16v2.5M12 16v2.5M15 16v2M16 12.5h4"/>',
+  alle: '<rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/>',
   schuh: '<path d="M3 17h18v-2c0-1-1-1.5-2.5-2L13 11l-2-4H8v3H5L3 12z"/><path d="M3 17v2h18v-2"/>'
 };
 const KAT = { "Beauty-Geräte":["maske","Beauty-Geräte"], "Beauty":["lippenstift","Beauty"], "Gesundheit & Fitness":["hantel","Fitness"],
@@ -382,7 +393,7 @@ else soc.innerHTML = sichtbar.map(s =>
   `<a href="${esc(s.link)}" target="_blank" rel="noopener" aria-label="${esc(s.label || s.name)} ${esc(s.handle)}"><span class="ic">${ICON[s.name] || "↗"}</span>${esc(s.label || s.name)}</a>`).join("");
 
 const kats = [...new Set(PRODUKTE.map(p => p.tag))];
-const catsEl = document.getElementById("cats"), chips = document.getElementById("chips");
+const catsEl = document.getElementById("cats");
 const list = document.getElementById("list"), count = document.getElementById("count");
 let aktiv = "Alle";
 let unter = null;
@@ -399,8 +410,8 @@ function karte(p, i) {
   return `<article class="item">${ph}<span class="cat-l">${esc(p.sub || kurz(p.tag))}</span><h3>${esc(p.name)}</h3><p>${esc(p.note)}</p>${btn}</article>`;
 }
 function render() {
-  catsEl.innerHTML = kats.map(k => `<button class="cat" aria-pressed="${k === aktiv}" data-k="${esc(k)}"><svg viewBox="0 0 24 24" aria-hidden="true">${KI[KAT[k] ? KAT[k][0] : "buch"]}</svg>${esc(kurz(k))}</button>`).join("");
-  chips.innerHTML = ["Alle", ...kats].map(k => `<button class="chip" aria-pressed="${k === aktiv}" data-k="${esc(k)}">${esc(k === "Alle" ? "Alle" : kurz(k))}</button>`).join("");
+  catsEl.innerHTML = kats.map(k => `<button class="cat" aria-pressed="${k === aktiv}" data-k="${esc(k)}"><svg viewBox="0 0 24 24" aria-hidden="true">${KI[KAT[k] ? KAT[k][0] : "buch"]}</svg>${esc(kurz(k))}</button>`).join("")
+    + `<button class="cat alle" aria-pressed="${aktiv === "Alle"}" data-k="Alle"><svg viewBox="0 0 24 24" aria-hidden="true">${KI.alle}</svg>Alles zeigen <small>${PRODUKTE.length} Teile</small></button>`;
   let sel = PRODUKTE.map((p, i) => [p, i]).filter(([p]) => aktiv === "Alle" || p.tag === aktiv);
   if (aktiv === "Alle") sel.sort((a, b) => (b[0].top ? 1 : 0) - (a[0].top ? 1 : 0));
   let kopf = "";
@@ -419,8 +430,6 @@ function render() {
   }
   list.innerHTML = kopf + sel.map(([p, i]) => karte(p, i)).join("");
   count.textContent = `${PRODUKTE.length} Teile`;
-  const a = chips.querySelector('[aria-pressed="true"]');
-  if (a) { const ar = a.getBoundingClientRect(), cr = chips.getBoundingClientRect(); chips.scrollLeft += (ar.left + ar.width / 2) - (cr.left + cr.width / 2); }
 }
 function waehle(k, springen) {
   aktiv = (k === aktiv && k !== "Alle" && !unter) ? "Alle" : k;
@@ -429,7 +438,9 @@ function waehle(k, springen) {
   if (springen) document.getElementById("bar").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 catsEl.addEventListener("click", e => { const b = e.target.closest(".cat"); if (b) waehle(b.dataset.k, true); });
-chips.addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) waehle(b.dataset.k, false); });
+const hoch = document.getElementById("hoch");
+hoch.addEventListener("click", () => document.querySelector(".head").scrollIntoView({ behavior: "smooth", block: "start" }));
+new IntersectionObserver(([e]) => hoch.classList.toggle("zeigen", !e.isIntersecting && e.boundingClientRect.top < 0)).observe(catsEl);
 list.addEventListener("click", e => {
   const s = e.target.closest(".sub"), b = e.target.closest(".back");
   if (!s && !b) return;
