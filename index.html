@@ -40,6 +40,14 @@
   .soc a:active .ic{transform:scale(.94)}
   .soc .ic svg{width:24px;height:24px;fill:var(--ink)}
 
+  /* Amazon-Shop-Karte */
+  .store{position:relative;display:flex;align-items:center;gap:14px;margin:30px 4px 0;padding:18px 18px 16px;background:var(--paper);border-radius:4px;color:var(--ink);text-decoration:none;box-shadow:0 10px 20px -12px rgba(60,20,20,.45)}
+  .store::before{content:"";position:absolute;top:-9px;left:50%;width:70px;height:18px;margin-left:-35px;background:var(--tape);transform:rotate(3deg)}
+  .store svg{flex:none;width:34px;height:34px;fill:none;stroke:var(--red);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .store b{display:block;font:400 26px/1.05 "Kaushan Script",cursive;color:var(--red)}
+  .store small{display:block;margin-top:5px;font:800 9.5px/1.5 Inter;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
+  .store .go{margin-left:auto;font:800 18px Inter;color:var(--red)}
+
   /* Kategorien */
   .head{display:flex;justify-content:space-between;align-items:baseline;margin:34px 2px 12px}
   .head .red{color:var(--red)}
@@ -49,6 +57,18 @@
   .cat svg{width:28px;height:28px;fill:none;stroke:var(--red);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
   .cat[aria-pressed="true"] svg{stroke:#fff}
   .cat[aria-pressed="true"]{background:var(--red);color:#fff}
+
+  /* Unterkategorien */
+  .subs{grid-column:1 / -1;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .sub{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:18px 16px 16px;background:var(--paper);border:0;border-radius:4px;
+    text-align:left;color:var(--ink);cursor:pointer;box-shadow:0 10px 20px -12px rgba(60,20,20,.45)}
+  .sub::before{content:"";position:absolute;top:-9px;left:50%;width:62px;height:18px;margin-left:-31px;background:var(--tape);transform:rotate(-4deg)}
+  .sub svg{width:34px;height:34px;fill:none;stroke:var(--red);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .sub b{font:400 30px/1 "Kaushan Script",cursive;color:var(--red);font-weight:400}
+  .sub small{font:800 10.5px Inter;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+  .crumb{grid-column:1 / -1;display:flex;align-items:baseline;gap:12px;margin-bottom:-4px}
+  .crumb span{font:400 32px/1 "Kaushan Script",cursive;color:var(--red)}
+  .back{font:800 11px Inter;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer}
 
   /* Sticky Filterleiste */
   .bar{position:sticky;top:0;z-index:20;margin:28px -16px 0;padding:10px 16px;background:rgba(239,230,220,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
@@ -101,6 +121,12 @@
 
   <nav class="soc" id="socials"></nav>
 
+  <a class="store" href="https://www.amazon.de/shop/bl0nd_007" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+    <span><b>Mein Amazon-Shop</b><small>Meine Ideenlisten &amp; Geschenke</small></span>
+    <span class="go">↗</span>
+  </a>
+
   <div class="head"><span class="caps">Was suchst du?</span><span class="caps red" id="count"></span></div>
   <div class="cats" id="cats"></div>
 
@@ -136,13 +162,14 @@ const SOCIALS = [
 // Ohne Link steht "Bald da". top: true = groß oben als "Gigi's Pick".
 // Eigenes Foto: Bild in den Ordner "fotos" legen und z. B. bild: "fotos/tasche.jpg" dazuschreiben.
 // amazon: normale Produktseite – dort holst du dir per SiteStripe deinen Partnerlink für "link".
+// sub: Unterkategorie (z. B. "Taschen", "Schmuck", "Sonnenbrillen", "Schuhe") – erscheint als eigene Kachel in der Kategorie.
 // kachel: Text auf der Kachel, solange kein Foto da ist. "|" = Zeilenumbruch.
 // Ohne bild wird die Text-Kachel gezeigt. (Keine Amazon-Bilder kopieren – nur eigene Fotos!)
 const PRODUKTE = [
   // ---- Beauty-Geräte ----
-  { kachel: "LED-|Maske", tag: "Beauty-Geräte", name: "Shark CryoGlow LED‑Maske", top: true,
-    note: "Die LED-Maske, die gerade überall auf TikTok ist – mit Kühl-Pads für die Augenpartie.",
-    amazon: "https://www.amazon.de/dp/B0FN4VLCK6", link: "https://www.amazon.de/dp/B0FN4VLCK6?tag=gigisfavorite-21" },
+  { kachel: "LED-|Maske", tag: "Beauty-Geräte", name: "Philips ReAura LED‑Maske", top: true,
+    note: "Die 3-in-1-LED-Maske für Gesicht, Augen und Hals – weiches Silikon, 10 Minuten am Abend.",
+    amazon: "https://www.amazon.de/dp/B0H1MVGMNF", link: "https://www.amazon.de/dp/B0H1MVGMNF?tag=gigisfavorite-21" },
   { kachel: "Thermo-|bürste", tag: "Beauty-Geräte", name: "Wavytalk Thermobürste",
     note: "Blowout-Look zu Hause: föhnen und rundbürsten in einem Schritt.",
     amazon: "https://www.amazon.de/dp/B0DRCQ4PBG", link: "https://www.amazon.de/dp/B0DRCQ4PBG?tag=gigisfavorite-21" },
@@ -188,9 +215,39 @@ const PRODUKTE = [
     amazon: "https://www.amazon.de/dp/B0CNTWY3VM", link: "https://www.amazon.de/dp/B0CNTWY3VM?tag=gigisfavorite-21" },
 
   // ---- Fashion ----
-  { kachel: "Hand-|tasche", tag: "Fashion", name: "JANSBEN Damen-Handtasche",
-    note: "Schlicht, passt zu allem, kleiner Preis.",
-    amazon: "https://www.amazon.de/dp/B07G92SZ1S", link: "https://www.amazon.de/dp/B07G92SZ1S?tag=gigisfavorite-21" },
+  { kachel: "Denim-|Tasche", tag: "Fashion", sub: "Taschen", name: "ZHEBO Y2K Denim-Schultertasche",
+    note: "Gewaschener Jeans-Look mit Y2K-Vibe – die Schultertasche, die jedes Outfit cooler macht.",
+    amazon: "https://www.amazon.de/dp/B0HGQX2J6J", link: "https://www.amazon.de/dp/B0HGQX2J6J?tag=gigisfavorite-21" },
+  { kachel: "Tier-|print", tag: "Fashion", sub: "Taschen", name: "Dolls Kill „Savage Ways“ Umhängetasche",
+    note: "Veganes Patchwork-Leder mit Tierprint, Kunstfell und Nieten – nichts für schüchterne Outfits.",
+    amazon: "https://www.amazon.de/dp/B0FB2K85TC", link: "https://www.amazon.de/dp/B0FB2K85TC?tag=gigisfavorite-21" },
+  { kachel: "Oliv-|Liebe", tag: "Fashion", sub: "Taschen", name: "GUESS „Camden“ Schultertasche in Oliv",
+    note: "Olivgrün ist die Farbe der Saison – edel, aber nicht langweilig.",
+    amazon: "https://www.amazon.de/dp/B0H78ZFG8J", link: "https://www.amazon.de/dp/B0H78ZFG8J?tag=gigisfavorite-21" },
+  { kachel: "Tutti-|Frutti", tag: "Fashion", sub: "Taschen", name: "Desigual „Galerna“ Crossbody-Tasche",
+    note: "Knallbuntes Muster für Tage, an denen das Outfit gute Laune machen soll.",
+    amazon: "https://www.amazon.de/dp/B0GGZJC38X", link: "https://www.amazon.de/dp/B0GGZJC38X?tag=gigisfavorite-21" },
+  { kachel: "Little|Black Bag", tag: "Fashion", sub: "Taschen", name: "MOSAMHUA gesteppte Beuteltasche aus Leder",
+    note: "Schwarzes Leder, Steppung und Kette – sieht teuer aus, passt zu allem.",
+    amazon: "https://www.amazon.de/dp/B0H21HFH4F", link: "https://www.amazon.de/dp/B0H21HFH4F?tag=gigisfavorite-21" },
+  { kachel: "Abend-|Tasche", tag: "Fashion", sub: "Taschen", name: "Jewels Schultertasche in Schwarz",
+    note: "Klein, schwarz, mit Schultergurt – die Tasche für Abende, an denen du nur das Nötigste brauchst.",
+    amazon: "https://www.amazon.de/dp/B0H79DM8SF", link: "https://www.amazon.de/dp/B0H79DM8SF?tag=gigisfavorite-21" },
+  { kachel: "Jelly-|Bag", tag: "Fashion", sub: "Taschen", name: "Hecatombic Jelly-Tasche mit Polka-Dots",
+    note: "Halbtransparent, wasserdicht und groß – vom Strand direkt zum Einkaufen.",
+    amazon: "https://www.amazon.de/dp/B0HCSPYL1W", link: "https://www.amazon.de/dp/B0HCSPYL1W?tag=gigisfavorite-21" },
+  { kachel: "Swarovski|Kreolen", tag: "Fashion", sub: "Schmuck", name: "Swarovski „Lucent“ Kreolen in Rosa",
+    note: "Rosa Kristall, der beim kleinsten Licht funkelt – Statement-Ohrringe für jedes Outfit.",
+    amazon: "https://www.amazon.de/dp/B096MZP35Q", link: "https://www.amazon.de/dp/B096MZP35Q?tag=gigisfavorite-21" },
+  { kachel: "Cocktail-|Ring", tag: "Fashion", sub: "Schmuck", name: "Swarovski „Lucent“ Cocktailring in Rosa",
+    note: "Das Match zu den Kreolen – ein Ring, der den ganzen Look macht.",
+    amazon: "https://www.amazon.de/dp/B09KWNLMK2", link: "https://www.amazon.de/dp/B09KWNLMK2?tag=gigisfavorite-21" },
+  { kachel: "Gold-|Ring", tag: "Fashion", sub: "Schmuck", name: "RIXERKOC Goldring mit Zirkonia",
+    note: "Zarter Goldring aus Edelstahl mit Steinchen – passt zu allem, auch als Geschenk.",
+    amazon: "https://www.amazon.de/dp/B0CW9TC19P", link: "https://www.amazon.de/dp/B0CW9TC19P?tag=gigisfavorite-21" },
+  { kachel: "Gold-|Uhr", tag: "Fashion", sub: "Schmuck", name: "BERNY zierliche Damenuhr in Gold",
+    note: "Feine Golduhr wie ein Armband – edel, leicht und wasserdicht für den Alltag.",
+    amazon: "https://www.amazon.de/dp/B0D5Y8R4TC", link: "https://www.amazon.de/dp/B0D5Y8R4TC?tag=gigisfavorite-21" },
 
   // ---- Home ----
   { kachel: "Duft-|kerze", tag: "Home", name: "Jean & Len Duftkerze Manuka Honey & Vanilla",
@@ -220,7 +277,10 @@ const KI = {
   hantel: '<path d="M2.5 10v4M5.5 7.5v9M18.5 7.5v9M21.5 10v4M5.5 12h13"/>',
   tasche: '<path d="M5 9h14l-1.3 11a1.5 1.5 0 01-1.5 1.3H7.8A1.5 1.5 0 016.3 20z"/><path d="M9 9V7a3 3 0 016 0v2"/>',
   kerze: '<path d="M12 2.8c1.5 1.9 2.1 3 2.1 4a2.1 2.1 0 01-4.2 0c0-1 .6-2.1 2.1-4z"/><path d="M12 9v2M8 11h8v10H8z"/>',
-  buch: '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5zM20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5z"/>'
+  buch: '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5zM20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5z"/>',
+  ring: '<circle cx="12" cy="15" r="6"/><path d="M9.5 9.5L8 6l4-3 4 3-1.5 3.5"/>',
+  brille: '<circle cx="6.5" cy="14" r="3.5"/><circle cx="17.5" cy="14" r="3.5"/><path d="M10 14h4M3 13l1-5h2M21 13l-1-5h-2"/>',
+  schuh: '<path d="M3 17h18v-2c0-1-1-1.5-2.5-2L13 11l-2-4H8v3H5L3 12z"/><path d="M3 17v2h18v-2"/>'
 };
 const KAT = { "Beauty-Geräte":["maske","Beauty-Geräte"], "Beauty":["lippenstift","Beauty"], "Gesundheit & Fitness":["hantel","Fitness"],
               "Fashion":["tasche","Fashion"], "Home":["kerze","Home"], "Bücher":["buch","Bücher"] };
@@ -246,6 +306,8 @@ const kats = [...new Set(PRODUKTE.map(p => p.tag))];
 const catsEl = document.getElementById("cats"), chips = document.getElementById("chips");
 const list = document.getElementById("list"), count = document.getElementById("count");
 let aktiv = "Alle";
+let unter = null;
+const SUBICON = { Taschen: "tasche", Schmuck: "ring", Sonnenbrillen: "brille", Schuhe: "schuh" };
 
 function karte(p, i) {
   const has = ok(p.link);
@@ -255,25 +317,47 @@ function karte(p, i) {
   const ph = `<div class="ph"><span class="no">${nr(i)}</span>${bild}</div>`;
   if (p.top && aktiv === "Alle") return `<article class="item pick">${ph}
       <div class="txt"><span class="lab">Gigi's Pick</span><h3>${esc(p.name)}</h3><p>${esc(p.note)}</p>${btn}</div></article>`;
-  return `<article class="item">${ph}<span class="cat-l">${esc(kurz(p.tag))}</span><h3>${esc(p.name)}</h3><p>${esc(p.note)}</p>${btn}</article>`;
+  return `<article class="item">${ph}<span class="cat-l">${esc(p.sub || kurz(p.tag))}</span><h3>${esc(p.name)}</h3><p>${esc(p.note)}</p>${btn}</article>`;
 }
 function render() {
   catsEl.innerHTML = kats.map(k => `<button class="cat" aria-pressed="${k === aktiv}" data-k="${esc(k)}"><svg viewBox="0 0 24 24" aria-hidden="true">${KI[KAT[k] ? KAT[k][0] : "buch"]}</svg>${esc(kurz(k))}</button>`).join("");
   chips.innerHTML = ["Alle", ...kats].map(k => `<button class="chip" aria-pressed="${k === aktiv}" data-k="${esc(k)}">${esc(k === "Alle" ? "Alle" : kurz(k))}</button>`).join("");
-  const sel = PRODUKTE.map((p, i) => [p, i]).filter(([p]) => aktiv === "Alle" || p.tag === aktiv);
+  let sel = PRODUKTE.map((p, i) => [p, i]).filter(([p]) => aktiv === "Alle" || p.tag === aktiv);
   if (aktiv === "Alle") sel.sort((a, b) => (b[0].top ? 1 : 0) - (a[0].top ? 1 : 0));
-  list.innerHTML = sel.map(([p, i]) => karte(p, i)).join("");
+  let kopf = "";
+  if (aktiv !== "Alle") {
+    const subs = [...new Set(sel.map(([p]) => p.sub).filter(Boolean))];
+    if (unter) {
+      kopf = `<div class="crumb"><button class="back" data-back="1">← ${esc(kurz(aktiv))}</button><span>${esc(unter)}</span></div>`;
+      sel = sel.filter(([p]) => p.sub === unter);
+    } else if (subs.length) {
+      kopf = `<div class="subs">${subs.map(u => {
+        const n = sel.filter(([p]) => p.sub === u).length;
+        return `<button class="sub" data-sub="${esc(u)}"><svg viewBox="0 0 24 24" aria-hidden="true">${KI[SUBICON[u] || "tasche"]}</svg><b>${esc(u)}</b><small>${n} ${n === 1 ? "Teil" : "Teile"} →</small></button>`;
+      }).join("")}</div>`;
+      sel = sel.filter(([p]) => !p.sub);
+    }
+  }
+  list.innerHTML = kopf + sel.map(([p, i]) => karte(p, i)).join("");
   count.textContent = `${PRODUKTE.length} Teile`;
   const a = chips.querySelector('[aria-pressed="true"]');
   if (a) { const ar = a.getBoundingClientRect(), cr = chips.getBoundingClientRect(); chips.scrollLeft += (ar.left + ar.width / 2) - (cr.left + cr.width / 2); }
 }
 function waehle(k, springen) {
-  aktiv = (k === aktiv && k !== "Alle") ? "Alle" : k;
+  aktiv = (k === aktiv && k !== "Alle" && !unter) ? "Alle" : k;
+  unter = null;
   render();
   if (springen) document.getElementById("bar").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 catsEl.addEventListener("click", e => { const b = e.target.closest(".cat"); if (b) waehle(b.dataset.k, true); });
 chips.addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) waehle(b.dataset.k, false); });
+list.addEventListener("click", e => {
+  const s = e.target.closest(".sub"), b = e.target.closest(".back");
+  if (!s && !b) return;
+  unter = s ? s.dataset.sub : null;
+  render();
+  document.getElementById("bar").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 render();
 </script>
 </body>
