@@ -528,7 +528,22 @@ list.addEventListener("click", e => {
   render();
   document.getElementById("bar").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+// Direkt-Links: #taschen, #skincare, #beauty, #home, #geschenke ...
+const slug = t => String(t).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/&/g,"und").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+function ausHash() {
+  const h = slug(decodeURIComponent(location.hash.slice(1)));
+  if (!h) return false;
+  for (const k of kats) {
+    if (slug(k) === h || slug(kurz(k)) === h) { aktiv = k; unter = null; return true; }
+    const subs = [...new Set(PRODUKTE.filter(p => p.tag === k && p.sub).map(p => p.sub))];
+    for (const u of subs) if (slug(u) === h) { aktiv = k; unter = u; return true; }
+  }
+  return false;
+}
+const hashTreffer = ausHash();
 render();
+if (hashTreffer) setTimeout(() => document.getElementById("bar").scrollIntoView({ block: "start" }), 50);
+window.addEventListener("hashchange", () => { if (ausHash()) { render(); document.getElementById("bar").scrollIntoView({ behavior: "smooth", block: "start" }); } });
 </script>
 </body>
 </html>
